@@ -219,7 +219,7 @@ Route.prototype.all = function all (handler) {
 methods.forEach(function (method) {
   Route.prototype[method] = function (handler) {
     const callbacks = flatten.call(slice.call(arguments), Infinity)
-
+    console.log('callbacks', callbacks)
     if (callbacks.length === 0) {
       throw new TypeError('argument handler is required')
     }
@@ -233,10 +233,11 @@ methods.forEach(function (method) {
 
       const layer = Layer('/', {}, fn)
       layer.method = method
-
+      console.log('layer', layer)
       this.methods[method] = true
       this.stack.push(layer)
     }
+    console.log('stackkkk', this.stack)
 
     return this
   }

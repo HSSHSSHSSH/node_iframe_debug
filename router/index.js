@@ -49,6 +49,7 @@ module.exports.Route = Route
  */
 
 function Router (options) {
+  // 如果 this 不是 Router 实例，则创建一个新的 Router 实例
   if (!(this instanceof Router)) {
     return new Router(options)
   }
@@ -60,6 +61,7 @@ function Router (options) {
   }
 
   // inherit from the correct prototype
+  // this 始终指向 Router 实例
   Object.setPrototypeOf(router, this)
 
   router.caseSensitive = opts.caseSensitive
@@ -162,6 +164,7 @@ Router.prototype.handle = function handle (req, res, callback) {
 
   // middleware and routes
   const stack = this.stack
+  console.log('stackkkk', stack);
 
   // manage inter-router variables
   const parentParams = req.params
@@ -256,6 +259,7 @@ Router.prototype.handle = function handle (req, res, callback) {
       }
 
       const method = req.method
+      console.log('current method', method)
       const hasMethod = route._handlesMethod(method)
 
       // build up automatic options response
@@ -285,7 +289,7 @@ Router.prototype.handle = function handle (req, res, callback) {
       ? mergeParams(layer.params, parentParams)
       : layer.params
     const layerPath = layer.path
-
+    console.log('routeeeee', route)
     // this should be done for the layer
     processParams(self.params, layer, paramcalled, req, res, function (err) {
       if (err) {
@@ -570,7 +574,7 @@ function mergeParams (params, parent) {
 function processParams (params, layer, called, req, res, done) {
   // captured parameters from the layer, keys and values
   const keys = layer.keys
-
+  console.log('keysss', !keys || keys.length === 0)
   // fast track
   if (!keys || keys.length === 0) {
     return done()

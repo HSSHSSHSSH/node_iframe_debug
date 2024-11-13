@@ -23,7 +23,7 @@ var compileQueryParser = require('./utils').compileQueryParser;
 var compileTrust = require('./utils').compileTrust;
 var merge = require('utils-merge');
 var resolve = require('path').resolve;
-var once = require('once')
+var once = require('once') // 只执行一次的函数
 var Router = require('../../router');
 
 /**
@@ -77,7 +77,6 @@ app.init = function init() {
           strict: this.enabled('strict routing')
         });
       }
-
       return router;
     }
   });
@@ -158,23 +157,30 @@ app.handle = function handle(req, res, callback) {
   });
 
   // set powered by header
+  // 如果开启了 x-powered-by 则设置响应头 X-Powered-By 表示服务器是基于 Express 框架
   if (this.enabled('x-powered-by')) {
     res.setHeader('X-Powered-By', 'Express');
   }
 
   // set circular references
+  // 设置 req 和 res 的循环引用
+  // 这样在中间件中可以方便地访问 req 和 res，确保请求对象与相应对象始终能相互访问
+  // 不需要总是同时传递 req 和 res
+  // 可以保证响应周期的完整性
   req.res = res;
   res.req = req;
 
   // alter the prototypes
+  // 更改 req 和 res 的原型
   Object.setPrototypeOf(req, this.request)
   Object.setPrototypeOf(res, this.response)
 
   // setup locals
+  // 设置 locals 对象，用于在中间件和路由之间传递数据
   if (!res.locals) {
     res.locals = Object.create(null);
   }
-
+  console.log('before router handle')
   this.router.handle(req, res, done);
 };
 
@@ -609,12 +615,12 @@ app.render = function render(name, options, callback) {
  */
 
 app.listen = function listen () {
-  console.log('this', this);
   var server = http.createServer(this)
   console.log('arguments', arguments);
   var args = Array.prototype.slice.call(arguments)
   console.log('args', args);
   if (typeof args[args.length - 1] === 'function') {
+    // 将最后一个参数包装成只执行一次的函数
     var done = args[args.length - 1] = once(args[args.length - 1])
     console.log('done', done);
     server.once('error', done)
