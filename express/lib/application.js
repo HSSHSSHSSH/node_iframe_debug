@@ -180,7 +180,6 @@ app.handle = function handle(req, res, callback) {
   if (!res.locals) {
     res.locals = Object.create(null);
   }
-  console.log('before router handle')
   this.router.handle(req, res, done);
 };
 
@@ -476,11 +475,19 @@ app.disable = function disable(setting) {
  */
 
 methods.forEach(function(method){
+  console.log('为 app 添加方法', method)
   app[method] = function(path){
+    console.log('app 路由定义', path)
+    console.log('arguments', arguments)
+    //q: 为什么要对 get 方法进行特殊的判断处理？
+    /**
+     * a: 在 express 中，app.get 有两种用法
+     * 1. 作为 HTTP GET 路由处理如：app.get('/', (req, res) => { ... })
+     * 2. 作为 app.set 的快捷方法如：app.set('view engine', 'ejs')， app.get('view engine')
+     * 因此，当 app.get 只传递一个参数时，表示要设置某个配置，而不是定义一个路由
+     */
     if (method === 'get' && arguments.length === 1) {
       // app.get(setting)
-      console.log('特殊处理 get 方法', path, this.set(path));
-      // 返回 this 就可以链式调用
       return this.set(path);
     }
 

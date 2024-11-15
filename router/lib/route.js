@@ -193,6 +193,7 @@ Route.prototype.dispatch = function dispatch (req, res, done) {
  */
 
 Route.prototype.all = function all (handler) {
+  // 将所有的处理函数放在一个数组中
   const callbacks = flatten.call(slice.call(arguments), Infinity)
 
   if (callbacks.length === 0) {
@@ -205,7 +206,6 @@ Route.prototype.all = function all (handler) {
     if (typeof fn !== 'function') {
       throw new TypeError('argument handler must be a function')
     }
-
     const layer = Layer('/', {}, fn)
     layer.method = undefined
 
@@ -217,9 +217,10 @@ Route.prototype.all = function all (handler) {
 }
 
 methods.forEach(function (method) {
+  console.log('再 Route 上添加方法', method)
   Route.prototype[method] = function (handler) {
+    console.log('Route 依赖收集', method, handler, handler.length)
     const callbacks = flatten.call(slice.call(arguments), Infinity)
-    console.log('callbacks', callbacks)
     if (callbacks.length === 0) {
       throw new TypeError('argument handler is required')
     }
@@ -231,13 +232,12 @@ methods.forEach(function (method) {
         throw new TypeError('argument handler must be a function')
       }
 
+      // 创建一个 layer 对象，并将其添加到 stack 中，layer被作为依赖对象被收集
       const layer = Layer('/', {}, fn)
       layer.method = method
-      console.log('layer', layer)
       this.methods[method] = true
       this.stack.push(layer)
     }
-    console.log('stackkkk', this.stack)
 
     return this
   }

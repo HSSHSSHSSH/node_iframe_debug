@@ -4,11 +4,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "调试 script.js",
+            "name": "调试 express.js",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/playground/src/script.js",
+            "program": "${workspaceFolder}/playground/src/express.js",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
         }

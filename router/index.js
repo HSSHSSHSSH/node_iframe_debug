@@ -164,7 +164,6 @@ Router.prototype.handle = function handle (req, res, callback) {
 
   // middleware and routes
   const stack = this.stack
-  console.log('stackkkk', stack);
 
   // manage inter-router variables
   const parentParams = req.params
@@ -232,7 +231,7 @@ Router.prototype.handle = function handle (req, res, callback) {
     let layer
     let match
     let route
-
+    // 遍历 stack 中的每一层，直到找到匹配的路由
     while (match !== true && idx < stack.length) {
       layer = stack[idx++]
       match = matchLayer(layer, path)
@@ -259,7 +258,6 @@ Router.prototype.handle = function handle (req, res, callback) {
       }
 
       const method = req.method
-      console.log('current method', method)
       const hasMethod = route._handlesMethod(method)
 
       // build up automatic options response
@@ -289,7 +287,6 @@ Router.prototype.handle = function handle (req, res, callback) {
       ? mergeParams(layer.params, parentParams)
       : layer.params
     const layerPath = layer.path
-    console.log('routeeeee', route)
     // this should be done for the layer
     processParams(self.params, layer, paramcalled, req, res, function (err) {
       if (err) {
@@ -409,12 +406,13 @@ Router.prototype.use = function use (handler) {
 
 /**
  * Create a new Route for the given path.
- *
+ * 根据路径创建一个新的 Route 对象
  * Each route contains a separate middleware stack and VERB handlers.
- *
+ * 每个路由包含一个单独的中间件栈和 VERB 处理程序。
  * See the Route api documentation for details on adding handlers
  * and middleware to routes.
- *
+ * 
+ * 
  * @param {string} path
  * @return {Route}
  * @public
@@ -567,14 +565,13 @@ function mergeParams (params, parent) {
 
 /**
  * Process any parameters for the layer.
- *
+ * 为 layer 处理参数
  * @private
  */
 
 function processParams (params, layer, called, req, res, done) {
   // captured parameters from the layer, keys and values
   const keys = layer.keys
-  console.log('keysss', !keys || keys.length === 0)
   // fast track
   if (!keys || keys.length === 0) {
     return done()
