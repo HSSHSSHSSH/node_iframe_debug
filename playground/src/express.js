@@ -1,5 +1,19 @@
 const express = require('../../express');
 const app = express();
+const router1 = express.Router();
+const router2 = express.Router();
+
+router1.get('/wawa', (req, res,next) => {
+    console.log('router1');
+    res.send('router1');
+});
+
+router2.get('/wawa', (req, res, next) => {
+    console.log('router2');
+    res.send('router2');
+});
+app.use('/router1', router1);
+app.use('/router2', router2);
 
 // 中间件设置
 // app.use(express.json()); // 用于解析 JSON 请求体
@@ -11,6 +25,14 @@ const app = express();
 //     res.setHeader('Access-Control-Allow-Headers', 'content-type');
 //     res.setHeader('Access-Control-Allow-Methods', 'POST, GET, OPTIONS');
 //     next();
+// });
+
+// app.use((req, res, next) => {
+//     console.log('中间件1');
+//     next();
+//     console.log('中间件1结束');
+// }, (req, res) => {
+//     console.log('中间件2');
 // });
 
 // app.use((req, res, next) => {
@@ -48,20 +70,20 @@ const app = express();
 //     `);
 // });
 
-app.get('/users', (req, res, next) => {
-    console.log('第一个路由')
-    next()
-});
+// app.get('/users', (req, res, next) => {
+//     console.log('第一个路由')
+//     next()
+// });
 
-app.get('/users', (req, res) => {
-    console.log('第二个路由')
-    res.send(`
-        <html>
-            <head><title>Users</title></head>
-            <body><h1>Users22</h1></body>
-        </html>
-    `);
-});
+// app.get('/users', (req, res) => {
+//     console.log('第二个路由')
+//     res.send(`
+//         <html>
+//             <head><title>Users</title></head>
+//             <body><h1>Users22</h1></body>
+//         </html>
+//     `);
+// });
 
 
 

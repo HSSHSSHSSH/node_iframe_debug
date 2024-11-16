@@ -439,6 +439,7 @@ Router.prototype.route = function route (path) {
 
 // create Router#VERB functions
 methods.concat('all').forEach(function (method) {
+  console.log('为 Router 原型添加 verb 方法', method)
   Router.prototype[method] = function (path) {
     const route = this.route(path)
     route[method].apply(route, slice.call(arguments, 1))

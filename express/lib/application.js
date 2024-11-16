@@ -199,6 +199,10 @@ app.use = function use(fn) {
 
   // default path to '/'
   // disambiguate app.use([fn])
+  /**
+   * 若 fn 不是函数，则说明是 app.use(path, fn) 的调用
+   * 需要对 path 进行处理
+   */
   if (typeof fn !== 'function') {
     var arg = fn;
 
@@ -212,7 +216,7 @@ app.use = function use(fn) {
       path = fn;
     }
   }
-
+  // 将 arguments 转换为数组，并展平
   var fns = flatten.call(slice.call(arguments, offset), Infinity);
 
   if (fns.length === 0) {
@@ -224,6 +228,7 @@ app.use = function use(fn) {
 
   fns.forEach(function (fn) {
     // non-express app
+    // fn 不是一个 express 应用 ???   TODO
     if (!fn || !fn.handle || !fn.set) {
       return router.use(path, fn);
     }
@@ -244,7 +249,7 @@ app.use = function use(fn) {
 
     // mounted an app
     fn.emit('mount', this);
-  }, this);
+  }, this); // 将 this（app实例） 绑定到 fn.emit 的回调函数中
 
   return this;
 };

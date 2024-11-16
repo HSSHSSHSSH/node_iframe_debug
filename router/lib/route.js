@@ -217,7 +217,7 @@ Route.prototype.all = function all (handler) {
 }
 
 methods.forEach(function (method) {
-  console.log('再 Route 上添加方法', method)
+  console.log('再 Route 原型上添加方法', method)
   Route.prototype[method] = function (handler) {
     console.log('Route 依赖收集', method, handler, handler.length)
     const callbacks = flatten.call(slice.call(arguments), Infinity)

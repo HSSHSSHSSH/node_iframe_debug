@@ -1,15 +1,19 @@
 在启动服务时：
 
-- 为 route 添加请求方法
+- 为 Route 原型添加 verb 方法
 
-- 为 app 添加请求方法
+- 为 Router 原型添加 verb 方法
+
+- 为 app 添加 verb 方法
+
+- 关联 app 与 router
 
 在定义 路由时触发以上添加的方法
 
 - app 请求方法收集
   - 特殊处理 get 方法中特殊情况，即获取配置项如 app.get('env')
   
-  - 按照 path 创建的路由 route（ 在创建 route 的过程中也为 router 添加了一些配置），  route 进行请求方法的收集
+  - 调用 this.route(path) 通过 router 按照 path 创建的路由 route（ 在创建 route 的过程中也为 router 添加了一些配置），  route 进行请求方法的收集
   
     - 在创建 route 时，每一个定义的路由路径都会创建一个新的路由，即使两个路径相同
   
@@ -240,6 +244,69 @@ let sync = 0
 这种设计体现了职责分离的原则，Router 负责整体路由系统的调度，而 Route 专注于单个路由内部的处理流程。
 
 
+
+
+
+app.use
+
+- 直接传递处理函数（默认 path 为 /）
+
+  - 注册阶段
+
+    - 将传递的函数参数转化为一个数组，循环调用 this.router.use(path = ‘/’, fn)
+
+    - 在 this.router.use 中，同样需要将 函数参数转化为数组，默认 path 为 '/', 创建 layer，存在 this.router.stack 中,此时数据结构为
+
+      ```js
+      Router: {
+          stack: [
+              layer: {
+              	route: undifined,
+              	handle: (req, res, next) => {}
+              },
+              layer: {
+                  route: undifined,
+                  handle: (req, res, next) => {}
+              },
+              ......
+          ]
+      }
+      ```
+
+      
+
+  - 执行阶段
+
+    - app.handle -> this.router.handle
+    - 在 router.stack 中按照 req 中解析出的 path 进行匹配
+    - 调用 trinPrefix 方法 -> 调用 layer.handleRequest 方法，此时上下文中的 next 为 Router.prototype.handle 中定义的 next 函数。
+
+- 传入 router （模块化）
+
+  - router 注册处理函数
+
+  ```js
+  const router1 = express.Router()
+  router1.get('/wawa', (req, res, next) => {})
+  ```
+
+   - - 调用 Router 上的 verb 方法 -> 调用 this.route(path) ，创建 route 与 layer ，通过 layer 将 route 与 router 关联 ->  在 this.route(path) 中进行处理函数的依赖收集
+
+  - 在 app 上挂载 router
+
+    ```js
+    app.use('/router1', router1)
+    ```
+
+    - 按照以上 app.use 中的逻辑进行判断，但此时的 path 是 router1 -> 调用 app.router.use 函数 app.router.use(path, router1)
+    - 在 app.router.use 中，将 router1 作为 handle 创建 layer 中，并将 layer 收集在 app.router.stack 中, 将 router1 与 app.router 关联
+
+  - 触发 router 上的处理函数
+
+    - app.handle -> app.router.handle 在 app.router.stack 中按照 req 解析出来的 path 进行匹配
+    - 调用 trimPrefix(.., layer,...) 方法 -> 调用 layer.handleRequest ，此时 上下文中的 next 为 Router.prototype.handle 中定义的 next
+    - 调用 layer.handle 即 router1() -> router1.handle
+    - 按照 req 的 verb 方法与路径进行 router1.stack 中 layer 的匹配, layer 中的 handle 为实际处理函数, 此时上下文中的 next 为 Route.prototype.dispatch 中定义的 handle
 
 app.route 
 
