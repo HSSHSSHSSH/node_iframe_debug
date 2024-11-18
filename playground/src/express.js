@@ -44,12 +44,15 @@ app.use((req, res, next) => {
 //     console.log('中间件2结束');
 // });
 // 异步洋葱
-app.use((req, res, next) => {
+app.use(async (req, res, next) => {
     console.log('中间件2');
-    setTimeout(() => {
-        console.log('中间件2异步回调');
-        next();
-    }, 5000);
+    await new Promise(resolve => {
+        setTimeout(() => {
+            console.log('中间件2异步回调');
+            resolve();
+        }, 5000);
+    })
+    next()
     console.log('中间件2结束');
 });
 

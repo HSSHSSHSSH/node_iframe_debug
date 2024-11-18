@@ -7,7 +7,7 @@
 const util = require('util')
 const createError = require('http-errors')
 const httpAssert = require('http-assert')
-const delegate = require('delegates')
+const delegate = require('./delegates')
 const statuses = require('statuses')
 const Cookies = require('cookies')
 
@@ -194,7 +194,7 @@ if (util.inspect.custom) {
 /**
  * Response delegation.
  */
-
+// 响应委托 将 response 对象上的方法代理到 context 对象上
 delegate(proto, 'response')
   .method('attachment')
   .method('redirect')
@@ -218,7 +218,7 @@ delegate(proto, 'response')
 /**
  * Request delegation.
  */
-
+// 请求委托 将 request 对象上的方法代理到 context 对象上
 delegate(proto, 'request')
   .method('acceptsLanguages')
   .method('acceptsEncodings')

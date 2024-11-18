@@ -373,12 +373,15 @@ express.router
       next();
       console.log('中间件1.1结束');
   });
-  app.use((req, res, next) => {
+  app.use(async (req, res, next) => {
       console.log('中间件2');
-      setTimeout(() => {
-          console.log('中间件2异步回调');
-          next();
-      }, 5000);
+      await new Promise(resolve => {
+          setTimeout(() => {
+              console.log('中间件2异步回调');
+              resolve();
+          }, 5000);
+      })
+      next()
       console.log('中间件2结束');
   });
   app.use((req, res, next) => {
@@ -387,21 +390,80 @@ express.router
       console.log('中间件3结束');
   });
   ```
-
+  
   控制台输出
-
+  
   ```js
   中间件1
   中间件1.1
   中间件2
-  中间件2结束
   中间件1.1结束
   中间件1结束
   // 等待 setTimeout
   中间件2异步回调
   中间件3
   中间件3结束
+  中间件2结束
   ```
-
+  
+  以下代码在 koa 中运行后，控制台输出：
+  
+  ```js
+  app.use(async (ctx, next) => {
+      console.log('中间件1');
+      await next();
+      console.log('中间件1结束');
+  });
+  
+  
+  // 异步洋葱
+  app.use(async (ctx, next) => {
+      console.log('中间件2');
+      await new Promise(resolve => {
+          setTimeout(() => {
+              console.log('中间件2异步回调');
+              resolve();
+          }, 5000);
+      });
+      next()
+      console.log('中间件2结束');
+  });
+  
+  app.use(async (ctx, next) => {
+      console.log('中间件3');
+      next();
+      console.log('中间件3结束');
+  });
+  ```
+  
+  
+  
+  ```js
+  中间件1
+  中间件2
+  // 等待 setTimeout
+  中间件2异步回调
+  中间件3
+  中间件3结束
+  中间件2结束
+  中间件1结束
+  ```
+  
   
 
+​	关键在于 next 函数在调用时，实际调用的是	
+
+```js
+function dispatch (i) {
+      if (i <= index) return Promise.reject(new Error('next() called multiple times'))
+      index = i
+      let fn = middleware[i]
+      if (i === middleware.length) fn = next
+      if (!fn) return Promise.resolve()
+      try {
+        return Promise.resolve(fn(context, dispatch.bind(null, i + 1))) // 关键在于嵌套了 promise 可以用 await 进行等待操作
+      } catch (err) {
+        return Promise.reject(err)
+      }
+    }
+```

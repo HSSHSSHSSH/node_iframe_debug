@@ -4,11 +4,11 @@
         {
             "type": "node",
             "request": "launch",
-            "name": "调试 express.js",
+            "name": "调试 koa.js",
             "skipFiles": [
                 "<node_internals>/**"
             ],
-            "program": "${workspaceFolder}/playground/src/express.js",
+            "program": "${workspaceFolder}/playground/src/koa.js",
             "console": "integratedTerminal",
             "internalConsoleOptions": "neverOpen"
         }
