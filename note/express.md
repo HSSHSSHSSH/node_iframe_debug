@@ -313,3 +313,95 @@ app.route
 
 
 express.router
+
+
+
+
+
+
+
+洋葱圈在同步与异步下的表现
+
+- 同步状态下
+
+  ```js
+  app.use((req, res, next) => {
+      console.log('中间件1');
+      next();
+      console.log('中间件1结束');
+  }, (req, res, next) => {
+      console.log('中间件1.1');
+      next();
+      console.log('中间件1.1结束');
+  });
+  app.use((req, res, next) => {
+      console.log('中间件2');
+      next();
+      console.log('中间件2结束');
+  });
+  app.use((req, res, next) => {
+      console.log('中间件3');
+      next();
+      console.log('中间件3结束');
+  });
+  ```
+
+  控制台输出
+
+  ```js
+  中间件1
+  中间件1.1
+  中间件2
+  中间件3
+  中间件3结束
+  中间件2结束
+  中间件1.1结束
+  中间件1结束
+  ```
+
+  是洋葱圈的表现
+
+- 异步状态下
+
+  ```js
+  app.use((req, res, next) => {
+      console.log('中间件1');
+      next();
+      console.log('中间件1结束');
+  }, (req, res, next) => {
+      console.log('中间件1.1');
+      next();
+      console.log('中间件1.1结束');
+  });
+  app.use((req, res, next) => {
+      console.log('中间件2');
+      setTimeout(() => {
+          console.log('中间件2异步回调');
+          next();
+      }, 5000);
+      console.log('中间件2结束');
+  });
+  app.use((req, res, next) => {
+      console.log('中间件3');
+      next();
+      console.log('中间件3结束');
+  });
+  ```
+
+  控制台输出
+
+  ```js
+  中间件1
+  中间件1.1
+  中间件2
+  中间件2结束
+  中间件1.1结束
+  中间件1结束
+  // 等待 setTimeout
+  中间件2异步回调
+  中间件3
+  中间件3结束
+  ```
+
+  
+

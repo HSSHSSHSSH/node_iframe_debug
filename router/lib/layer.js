@@ -134,7 +134,6 @@ Layer.prototype.handleError = function handleError (error, req, res, next) {
 
 Layer.prototype.handleRequest = function handleRequest (req, res, next) {
   const fn = this.handle
-  console.log('fn', fn);
   // fn.length 是函数参数的个数
   if (fn.length > 3) {
     // not a standard request handler

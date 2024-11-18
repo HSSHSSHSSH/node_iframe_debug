@@ -1,19 +1,19 @@
 const express = require('../../express');
 const app = express();
-const router1 = express.Router();
-const router2 = express.Router();
+// const router1 = express.Router();
+// const router2 = express.Router();
 
-router1.get('/wawa', (req, res,next) => {
-    console.log('router1');
-    res.send('router1');
-});
+// router1.get('/wawa', (req, res,next) => {
+//     console.log('router1');
+//     res.send('router1');
+// });
 
-router2.get('/wawa', (req, res, next) => {
-    console.log('router2');
-    res.send('router2');
-});
-app.use('/router1', router1);
-app.use('/router2', router2);
+// router2.get('/wawa', (req, res, next) => {
+//     console.log('router2');
+//     res.send('router2');
+// });
+// app.use('/router1', router1);
+// app.use('/router2', router2);
 
 // 中间件设置
 // app.use(express.json()); // 用于解析 JSON 请求体
@@ -27,25 +27,38 @@ app.use('/router2', router2);
 //     next();
 // });
 
-// app.use((req, res, next) => {
-//     console.log('中间件1');
-//     next();
-//     console.log('中间件1结束');
-// }, (req, res) => {
-//     console.log('中间件2');
-// });
+app.use((req, res, next) => {
+    console.log('中间件1');
+    next();
+    console.log('中间件1结束');
+}, (req, res, next) => {
+    console.log('中间件1.1');
+    next();
+    console.log('中间件1.1结束');
+});
 
+// 同步洋葱
 // app.use((req, res, next) => {
 //     console.log('中间件2');
 //     next();
 //     console.log('中间件2结束');
 // });
+// 异步洋葱
+app.use((req, res, next) => {
+    console.log('中间件2');
+    setTimeout(() => {
+        console.log('中间件2异步回调');
+        next();
+    }, 5000);
+    console.log('中间件2结束');
+});
 
-// app.use((req, res, next) => {
-//     console.log('中间件3');
-//     next();
-//     console.log('中间件3结束');
-// });
+app.use((req, res, next) => {
+    console.log('中间件3');
+    next();
+    console.log('中间件3结束');
+});
+
 
 // 路由处理
 // app.get('/aa', (req, res, next) => {
@@ -85,6 +98,12 @@ app.use('/router2', router2);
 //     `);
 // });
 
+// app.route('/users')
+//     .get((req, res) => {
+//         console.log('第三个路由')
+//         res.send('第三个路由')
+//     })
+
 
 
 // app.post('/createUser', (req, res) => {
@@ -111,6 +130,7 @@ app.use('/router2', router2);
 //         </html>
 //     `);
 // });
+
 
 // 启动服务器
 const PORT = 3333;

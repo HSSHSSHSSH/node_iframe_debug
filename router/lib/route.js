@@ -145,7 +145,7 @@ Route.prototype.dispatch = function dispatch (req, res, done) {
 
     // find next matching layer
     while (match !== true && idx < stack.length) {
-      layer = stack[idx++]
+      layer = stack[idx++] // 获取当前的 layer 对象，开发者编写的接口处理函数就在这个 layer 对象中
       match = !layer.method || layer.method === method
     }
 
