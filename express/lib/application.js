@@ -24,7 +24,7 @@ var compileTrust = require('./utils').compileTrust;
 var merge = require('utils-merge');
 var resolve = require('path').resolve;
 var once = require('once') // 只执行一次的函数
-var Router = require('../../router');
+var Router = require('../router');
 
 /**
  * Module variables.
